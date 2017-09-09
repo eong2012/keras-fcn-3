@@ -19,14 +19,16 @@ If you aren't sure run this to do a full download + conversion setup of the data
 from __future__ import division, print_function, unicode_literals
 from sacred import Ingredient, Experiment
 import sys
+import os
 import numpy as np
 from PIL import Image
 from collections import defaultdict
-import os
+
 from keras.utils import get_file
 # from tf_image_segmentation.recipes import datasets
-from tf_image_segmentation.utils.tf_records import write_image_annotation_pairs_to_tfrecord
-from tf_image_segmentation.utils import pascal_voc
+
+from tf_records import write_image_annotation_pairs_to_tfrecord
+import pascal_voc
 import tarfile
 
 # ============== Ingredient 2: dataset =======================
