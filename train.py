@@ -132,6 +132,7 @@ def train(batch_size, epochs, lr_base, lr_power, weight_decay, classes,
         lines = fp.readlines()
         fp.close()
         return len(lines)
+
     history = model.fit_generator(
         generator=train_datagen.flow_from_directory(
             file_path=train_file_path,
@@ -148,13 +149,13 @@ def train(batch_size, epochs, lr_base, lr_power, weight_decay, classes,
         epochs=epochs,
         callbacks=callbacks,
         nb_worker=4,
-        # validation_data=val_datagen.flow_from_directory(
-        #     file_path=val_file_path, data_dir=data_dir, data_suffix='.jpg',
-        #     label_dir=label_dir, label_suffix='.png',classes=classes,
-        #     target_size=target_size, color_mode='rgb',
-        #     batch_size=batch_size, shuffle=False
-        # ),
-        # nb_val_samples = 64
+         validation_data=val_datagen.flow_from_directory(
+             file_path=val_file_path, data_dir=data_dir, data_suffix='.jpg',
+             label_dir=label_dir, label_suffix='.png',classes=classes,
+             target_size=target_size, color_mode='rgb',
+             batch_size=batch_size, shuffle=False
+        ),
+        nb_val_samples = 64,
         class_weight=class_weight
        )
 
@@ -175,7 +176,7 @@ if __name__ == '__main__':
     else:
         weight_decay = 1e-4
     target_size = (320, 320)
-    dataset = 'VOC2012_BERKELEY'
+    dataset = 'BDD'
     if dataset == 'VOC2012_BERKELEY':
         # pascal voc + berkeley semantic contours annotations
         train_file_path = os.path.expanduser('~/.keras/datasets/VOC2012/combined_imageset_train.txt') #Data/VOClarge/VOC2012/ImageSets/Segmentation
@@ -188,9 +189,8 @@ if __name__ == '__main__':
         classes = 21
     if dataset == 'COCO':
         # ###################### loss function & metric ########################
-        train_file_path = os.path.expanduser('~/.keras/datasets/VOC2012/VOCdevkit/VOC2012/ImageSets/Segmentation/train.txt') #Data/VOClarge/VOC2012/ImageSets/Segmentation
-        # train_file_path = os.path.expanduser('~/.keras/datasets/oneimage/train.txt') #Data/VOClarge/VOC2012/ImageSets/Segmentation
-        val_file_path   = os.path.expanduser('~/.keras/datasets/VOC2012/VOCdevkit/VOC2012/ImageSets/Segmentation/val.txt')
+        train_file_path = '/media/keti-ai/AI_HARD3/DataSets/BDD/segmentation/train.txt'
+        val_file_path   = '/media/keti-ai/AI_HARD3/DataSets/BDD/segmentation/val.txt'
         data_dir        = os.path.expanduser('~/.keras/datasets/VOC2012/VOCdevkit/VOC2012/JPEGImages')
         label_dir       = os.path.expanduser('~/.keras/datasets/VOC2012/VOCdevkit/VOC2012/SegmentationClass')
         loss_fn = binary_crossentropy_with_logits
@@ -201,9 +201,24 @@ if __name__ == '__main__':
         ignore_label = None
         label_cval = 0
 
+    if dataset == "BDD":
+        train_file_path = os.path.expanduser('~/.keras/datasets/BDD/train.txt')
+        val_file_path = os.path.expanduser('~/.keras/datasets/BDD/val.txt')
+        data_dir = os.path.expanduser('~/.keras/datasets/BDD/raw_images/')
+        label_dir = os.path.expanduser('~/.keras/datasets/BDD/class_color/')
+        data_suffix = '.jpg'
+        label_suffix = '.png'
+        classes = 41
+        loss_fn = softmax_sparse_crossentropy_ignoring_last_label
+        metrics = [sparse_accuracy_ignoring_last_label]
+        loss_shape = None
+        ignore_label = None
+        label_cval = 255
+
+
 
     # ###################### loss function & metric ########################
-    if dataset == 'VOC2012' or dataset == 'VOC2012_BERKELEY':
+    if dataset == 'VOC2012' or dataset == 'VOC2012_BERKELEY' or "BDD":
         loss_fn = softmax_sparse_crossentropy_ignoring_last_label
         metrics = [sparse_accuracy_ignoring_last_label]
         loss_shape = None

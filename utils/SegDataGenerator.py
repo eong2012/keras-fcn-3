@@ -148,6 +148,7 @@ class SegDirectoryIterator(Iterator):
                 self.label_shape = self.target_size + (self.nb_label_ch,)
             else:
                 self.label_shape = (self.nb_label_ch,) + self.target_size
+
         elif batch_size != 1:
             raise ValueError(
                 'Batch size must be 1 when target image size is undetermined')
@@ -213,6 +214,8 @@ class SegDirectoryIterator(Iterator):
                 y = np.load(label_filepath)
             else:
                 label = Image.open(label_filepath)
+                label = label.convert("P")
+
                 if self.save_to_dir and self.palette is None:
                     self.palette = label.palette
 
